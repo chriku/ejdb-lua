@@ -6,12 +6,32 @@ local function decode(t,int)
 end
 package.cpath=package.cpath..";build/linux/x86_64/release/libejdb.so"
 local ejdb=require"ejdb"
-local db = assert(ejdb.open("test.db",""))
---print(db:put_new("parrots","{\"name\":\"Bianca\", \"age\":4,\"xyz\":[true,3,0.5]}"))
-print(db:put_new("parrots",{name="Bianca",age=4,xyz={1,2.0,false}}))
-local q=assert(ejdb.query("parrots","/[age > :age]"))
-q:set("age",0,2)
-print(db:exec(q,function(id,data)
-print(id)
-decode(data)
-end))
+local db = assert(ejdb.open("test.db","w"))
+assert(db:put("parrots",{name="Bianca",age=4}))
+assert(db:put(8,"parrots","{\"name\":\"Darko\", \"age\":8}"))
+do
+  print("Querying parrots")
+  local q=assert(ejdb.query("parrots","/*"))
+  assert(db:exec(q,function(id,data) print(id) decode(data) end))
+  print("Queryed parrots")
+end
+do
+  print("Ageing up Bianca")
+  assert(db:exec(ejdb.query("parrots",'/[name = Bianca] | apply {"age": 5}'),function()end))
+end
+do
+  print("Querying parrots")
+  local q=assert(ejdb.query("parrots","/*"))
+  assert(db:exec(q,function(id,data) print(id) decode(data) end))
+  print("Queryed parrots")
+end
+do
+  print("Deleting Darko")
+  assert(db:exec(ejdb.query("parrots",'/[name = Darko] | del'),function()end))
+end
+do
+  print("Querying parrots")
+  local q=assert(ejdb.query("parrots","/*"))
+  assert(db:exec(q,function(id,data) print(id) decode(data) end))
+  print("Queryed parrots")
+end

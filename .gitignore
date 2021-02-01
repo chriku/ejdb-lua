@@ -2,3 +2,4 @@ build
 .xmake
 *.db
 *.db-wal
+doc
