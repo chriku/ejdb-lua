@@ -8,6 +8,10 @@
 #define EJDB_DATABASE_META "EJDB*"
 #define EJDB_QUERY_META "JQL*"
 
+#ifdef LUA_VERSION_NUM == 501
+#define lua_isinteger(L, idx) false
+#endif
+
 #define EJDB_LUA_ASSERT(expr)                                                                                          \
   {                                                                                                                    \
     iwrc rc = (expr);                                                                                                  \
@@ -82,7 +86,7 @@ iwrc ejdb_lua_jbl_from_lua_set_field(lua_State* L, int index, const char* key, J
 iwrc ejdb_lua_jbl_from_lua(lua_State* L, int index, JBL* output) {
   iwrc rc;
   if (lua_istable(L, index)) {
-    lua_geti(L, index, 1);
+    lua_rawgeti(L, index, 1);
     bool is_array = !lua_isnil(L, -1);
     lua_pop(L, 1);
     if (is_array) {
@@ -158,6 +162,10 @@ int ejdb_lua_query(lua_State* L) {
   return 1;
 }
 
+void jql_set_str2_stdfree(void* str, void* op) {
+  free(str);
+}
+
 int ejdb_lua_query_set(lua_State* L) {
   lua_settop(L, 4);
   JQL* q = luaL_checkudata(L, 1, EJDB_QUERY_META);
@@ -167,9 +175,41 @@ int ejdb_lua_query_set(lua_State* L) {
     int64_t value = luaL_checkinteger(L, 4);
     EJDB_LUA_ERROR(jql_set_i64(*q, placeholder, index, value));
     return 0;
+  } else if (lua_isnumber(L, 4)) {
+    double value = luaL_checknumber(L, 4);
+    EJDB_LUA_ERROR(jql_set_f64(*q, placeholder, index, value));
+    return 0;
+  } else if (lua_isboolean(L, 4)) {
+    bool value = lua_toboolean(L, 4);
+    EJDB_LUA_ERROR(jql_set_bool(*q, placeholder, index, value));
+    return 0;
+  } else if (lua_isstring(L, 4)) {
+    const char* value = luaL_checkstring(L, 4);
+    const char* data = malloc(strlen(value) + 1);
+    memcpy(data, value, strlen(value) + 1);
+    EJDB_LUA_ERROR(jql_set_str2(*q, placeholder, index, data, jql_set_str2_stdfree, NULL));
+    return 0;
+  } else if (lua_istable(L, 4)) {
+    JBL j;
+    ejdb_lua_jbl_from_lua(L, 4, &j);
+    jql_set_json_jbl(*q, placeholder, index, j);
+    jbl_destroy(&j);
   } else {
     return luaL_error(L, "invalid type for query:set: %s", lua_typename(L, lua_type(L, 4)));
   }
+  return 0;
+}
+
+int ejdb_lua_query_set_regex(lua_State* L) {
+  lua_settop(L, 4);
+  JQL* q = luaL_checkudata(L, 1, EJDB_QUERY_META);
+  const char* placeholder = luaL_checkstring(L, 2);
+  int index = luaL_checkinteger(L, 3);
+  const char* value = luaL_checkstring(L, 4);
+  const char* data = malloc(strlen(value) + 1);
+  memcpy(data, value, strlen(value) + 1);
+  EJDB_LUA_ERROR(jql_set_regexp2(*q, placeholder, index, data, jql_set_str2_stdfree, NULL));
+  return 0;
   return 0;
 }
 
@@ -269,6 +309,8 @@ int luaopen_ejdb(lua_State* L) {
   lua_setfield(L, -2, "__gc");
   lua_pushcfunction(L, ejdb_lua_query_set);
   lua_setfield(L, -2, "set");
+  lua_pushcfunction(L, ejdb_lua_query_set_regex);
+  lua_setfield(L, -2, "set_regex");
   lua_setfield(L, -1, "__index");
 
   EJDB_LUA_ERROR(ejdb_init());

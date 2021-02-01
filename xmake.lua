@@ -7,4 +7,5 @@ target("ejdb")
 
   add_files("src/*.c")
 
+  --add_includedirs("/usr/local/include/luajit-2.1/")
   add_links("ejdb2-2","iowow-1","facilio-1","pthread","m","c")
