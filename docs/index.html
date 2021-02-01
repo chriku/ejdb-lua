@@ -1,0 +1,683 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Lua EJDB</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Class_db">Class db </a></li>
+<li><a href="#Class_jql">Class jql </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>ejdb</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>ejdb</code></h1>
+<p>Simple binding for ejdb to lua</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#open">open (file, mode)</a></td>
+	<td class="summary">Open a ejdb database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#query">query (collection, query)</a></td>
+	<td class="summary">Create a new query</td>
+	</tr>
+</table>
+<h2><a href="#Class_db">Class db </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#db:put">db:put ([id], collection, document)</a></td>
+	<td class="summary">Put a document into a collection</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:exec">db:exec (query, callback)</a></td>
+	<td class="summary">Execute a JQL query</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:close">db:close ()</a></td>
+	<td class="summary">Close a database handle</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:get">db:get (collection, id)</a></td>
+	<td class="summary">Retrieve a document from the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:get">db:get (collection, id)</a></td>
+	<td class="summary">Delete a document from the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:remove_collection">db:remove_collection (collection)</a></td>
+	<td class="summary">Delete a collection from the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:rename_collection">db:rename_collection (old_name, new_name)</a></td>
+	<td class="summary">Delete a collection from the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:ensure_collection">db:ensure_collection (collection)</a></td>
+	<td class="summary">Ensure a collection on the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:ensure_index">db:ensure_index (collection, field, mode)</a></td>
+	<td class="summary">Ensure a index in a collection</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:remove_index">db:remove_index (collection, field, mode)</a></td>
+	<td class="summary">Remove a index from a collection</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#db:get_meta">db:get_meta ()</a></td>
+	<td class="summary">Retrieve database structure</td>
+	</tr>
+</table>
+<h2><a href="#Class_jql">Class jql </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#jql:set">jql:set (placeholder, index, value)</a></td>
+	<td class="summary">Set a value in the query</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#jql:set_regex">jql:set_regex (placeholder, index, value)</a></td>
+	<td class="summary">Set a regex value in the query</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "open"></a>
+    <strong>open (file, mode)</strong>
+    </dt>
+    <dd>
+    Open a ejdb database
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">file</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The database file to open
+        </li>
+        <li><span class="parameter">mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The modestring. `w` stands for truncate, `r` stands for read only. Empty string is normal open
+ mode
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="index.html#db">db</a></span>
+        The opened database
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "query"></a>
+    <strong>query (collection, query)</strong>
+    </dt>
+    <dd>
+    Create a new query
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         To collection to operate on
+        </li>
+        <li><span class="parameter">query</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The query to prepare
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="index.html#jql">jql</a></span>
+        The created query
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Class_db"></a>Class db </h2>
+
+          <div class="section-description">
+          Database handle
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "db:put"></a>
+    <strong>db:put ([id], collection, document)</strong>
+    </dt>
+    <dd>
+    Put a document into a collection
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">integer</span></span>
+         The id of the inserted document
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to insert into
+        </li>
+        <li><span class="parameter">document</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a> or <a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.6">table</a></span>
+         The document to insert. Can be a json string or a table
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">integer</span></span>
+        ID of new document
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:exec"></a>
+    <strong>db:exec (query, callback)</strong>
+    </dt>
+    <dd>
+    Execute a JQL query
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">query</span>
+            <span class="types"><a class="type" href="index.html#jql">jql</a></span>
+         The query to execute
+        </li>
+        <li><span class="parameter">callback</span>
+            <span class="types"><span class="type">function(id,data)</span></span>
+         Callback to execute for each found document
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">integer</span></span>
+        Number of documents matched
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:close"></a>
+    <strong>db:close ()</strong>
+    </dt>
+    <dd>
+    Close a database handle
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:get"></a>
+    <strong>db:get (collection, id)</strong>
+    </dt>
+    <dd>
+    Retrieve a document from the database
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to work on
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">integer</span></span>
+         ID of the document to get
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.6">table</a></span>
+        document content
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:get"></a>
+    <strong>db:get (collection, id)</strong>
+    </dt>
+    <dd>
+    Delete a document from the database
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to work on
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">integer</span></span>
+         ID of the document to get
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">index</span></span>
+        of the deleted document
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:remove_collection"></a>
+    <strong>db:remove_collection (collection)</strong>
+    </dt>
+    <dd>
+    Delete a collection from the database
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to work on
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:rename_collection"></a>
+    <strong>db:rename_collection (old_name, new_name)</strong>
+    </dt>
+    <dd>
+    Delete a collection from the database
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">old_name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to rename
+        </li>
+        <li><span class="parameter">new_name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         Name for the collection to have afterwards
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:ensure_collection"></a>
+    <strong>db:ensure_collection (collection)</strong>
+    </dt>
+    <dd>
+    Ensure a collection on the database
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to work on
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:ensure_index"></a>
+    <strong>db:ensure_index (collection, field, mode)</strong>
+    </dt>
+    <dd>
+    Ensure a index in a collection
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to work on
+        </li>
+        <li><span class="parameter">field</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         JSON Pointer to the field
+        </li>
+        <li><span class="parameter">mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         List of mode chars: `i`=i64, `s`=str, `f`=double, `u`=unique
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:remove_index"></a>
+    <strong>db:remove_index (collection, field, mode)</strong>
+    </dt>
+    <dd>
+    Remove a index from a collection
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collection</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The collection to work on
+        </li>
+        <li><span class="parameter">field</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         JSON Pointer to the field
+        </li>
+        <li><span class="parameter">mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         List of mode chars: `i`=i64, `s`=str, `f`=double, `u`=unique
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "db:get_meta"></a>
+    <strong>db:get_meta ()</strong>
+    </dt>
+    <dd>
+    Retrieve database structure
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.6">table</a></span>
+        Structure of the database
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+        nil</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+        Error Message</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Class_jql"></a>Class jql </h2>
+
+          <div class="section-description">
+          JQL Query
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "jql:set"></a>
+    <strong>jql:set (placeholder, index, value)</strong>
+    </dt>
+    <dd>
+    Set a value in the query
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">placeholder</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The placeholder to set
+        </li>
+        <li><span class="parameter">index</span>
+            <span class="types"><span class="type">integer</span></span>
+         Index of something (?)
+        </li>
+        <li><span class="parameter">value</span>
+         The value to set this placeholder to
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "jql:set_regex"></a>
+    <strong>jql:set_regex (placeholder, index, value)</strong>
+    </dt>
+    <dd>
+    Set a regex value in the query
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">placeholder</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The placeholder to set
+        </li>
+        <li><span class="parameter">index</span>
+            <span class="types"><span class="type">integer</span></span>
+         Index of something (?)
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         The regex to search for
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2021-02-01 08:50:18 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
