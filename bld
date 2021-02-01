@@ -1,5 +1,0 @@
-set -e
-clang-format-12 -i src/*.c
-xmake
-#luajit test.lua
-lua test.lua
