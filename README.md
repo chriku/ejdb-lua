@@ -1,5 +1,7 @@
 # Basic ejdb lua binding
 
+For ejdb see [Softmotions/ejdb](https://github.com/Softmotions/ejdb)
+
 For documentation see https://chriku.github.io/ejdb-lua/index.html
 
 Simple, not yet complete binding of ejdb2 for lua.
