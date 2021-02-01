@@ -1,0 +1,2 @@
+# Basic ejdb binding
+
