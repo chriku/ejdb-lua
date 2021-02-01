@@ -54,10 +54,14 @@ iwrc ejdb_lua_jbl_from_lua_set_field(lua_State* L, int index, const char* key, J
     if ((rc = jbl_set_nested(*output, key, nested)))
       return rc;
     jbl_destroy(&nested);
-  } else if (lua_isstring(L, index)) {
-    jbl_set_string(*output, key, luaL_checkstring(L, index));
   } else if (lua_isboolean(L, index)) {
     jbl_set_bool(*output, key, lua_toboolean(L, index));
+  } else if (lua_isinteger(L, index)) {
+    jbl_set_i64(*output, key, lua_tointeger(L, index));
+  } else if (lua_isnumber(L, index)) {
+    jbl_set_f64(*output, key, lua_tonumber(L, index));
+  } else if (lua_isstring(L, index)) {
+    jbl_set_string(*output, key, luaL_checkstring(L, index));
   } else {
     luaL_error(L, "invalid type to serialize: %s", lua_typename(L, lua_type(L, index)));
     return 0;
