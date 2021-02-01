@@ -8,6 +8,8 @@ Simple, not yet complete binding of ejdb2 for lua.
 
 Compiles against lua5.4 and luajit
 
+# WARNING: Current xmake-based build system does not work reliably. If you want to use this I recommend compiling the single c file yourself!
+
 ## Example
 ```lua
 local ejdb = require"ejdb"
