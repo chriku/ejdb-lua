@@ -27,7 +27,8 @@ do
 end
 do
   print("Deleting Darko")
-  assert(db:exec(ejdb.query("parrots",'/[name = Darko] | del'),function()end))
+  --assert(db:exec(ejdb.query("parrots",'/[name = Darko] | del'),function()end))
+  assert(db:del("parrots",8))
 end
 do
   print("Querying parrots")
@@ -35,3 +36,6 @@ do
   assert(db:exec(q,function(id,data) print(id) decode(data) end))
   print("Queryed parrots")
 end
+print("quering parrot 1")
+decode(assert(db:get("parrots",1)))
+decode(db:get_meta())

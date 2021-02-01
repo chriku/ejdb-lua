@@ -194,7 +194,6 @@ void jql_set_str2_stdfree(void* str, void* op) {
 }
 
 /// Open a ejdb database
-// Text
 // @function open
 // @tparam string file The database file to open
 // @tparam string mode The modestring. `w` stands for truncate, `r` stands for read only. Empty string is normal open
@@ -299,12 +298,170 @@ int ejdb_lua_ejdb_exec(lua_State* L) {
   return 1;
 }
 
-/// Close a databasew handle
+/// Close a database handle
 // @function close
 int ejdb_lua_ejdb_close(lua_State* L) {
   EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
   EJDB_LUA_ERROR(ejdb_close(db));
   return 0;
+}
+
+/// Retrieve a document from the database
+// @function get
+// @tparam string collection The collection to work on
+// @tparam integer id ID of the document to get
+// @treturn[1] table document content
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_get(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  const char* collection = luaL_checkstring(L, 2);
+  int64_t index = luaL_checkinteger(L, 3);
+  JBL out;
+  EJDB_LUA_ASSERT(ejdb_get(*db, collection, index, &out));
+  ejdb_lua_push_jbl(L, &out);
+  jbl_destroy(&out);
+  return 1;
+}
+
+/// Delete a document from the database
+// @function get
+// @tparam string collection The collection to work on
+// @tparam integer id ID of the document to get
+// @treturn[1] index of the deleted document
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_del(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  const char* collection = luaL_checkstring(L, 2);
+  int64_t index = luaL_checkinteger(L, 3);
+  EJDB_LUA_ASSERT(ejdb_del(*db, collection, index));
+  lua_pushinteger(L, index);
+  return 1;
+}
+
+/// Delete a collection from the database
+// @function remove_collection
+// @tparam string collection The collection to work on
+// @return[1] true
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_remove_collection(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  const char* collection = luaL_checkstring(L, 2);
+  EJDB_LUA_ASSERT(ejdb_remove_collection(*db, collection));
+  lua_pushboolean(L, true);
+  return 1;
+}
+
+/// Delete a collection from the database
+// @function rename_collection
+// @tparam string old_name The collection to rename
+// @tparam string new_name Name for the collection to have afterwards
+// @return[1] true
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_rename_collection(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  const char* collection1 = luaL_checkstring(L, 2);
+  const char* collection2 = luaL_checkstring(L, 3);
+  EJDB_LUA_ASSERT(ejdb_rename_collection(*db, collection1, collection2));
+  lua_pushboolean(L, true);
+  return 1;
+}
+
+/// Ensure a collection on the database
+// @function ensure_collection
+// @tparam string collection The collection to work on
+// @return[1] true
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_ensure_collection(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  const char* collection = luaL_checkstring(L, 2);
+  EJDB_LUA_ASSERT(ejdb_ensure_collection(*db, collection));
+  lua_pushboolean(L, true);
+  return 1;
+}
+
+/// Ensure a index in a collection
+// @function ensure_index
+// @tparam string collection The collection to work on
+// @tparam string field JSON Pointer to the field
+// @tparam string mode List of mode chars: `i`=i64, `s`=str, `f`=double, `u`=unique
+// @return[1] true
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_ensure_index(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  const char* collection = luaL_checkstring(L, 2);
+  const char* path = luaL_checkstring(L, 3);
+  const char* mode = luaL_checkstring(L, 3);
+  ejdb_idx_mode_t m = 0;
+  while (mode[0]) {
+    if (mode[0] == 'u') {
+      m |= EJDB_IDX_UNIQUE;
+    } else if (mode[0] == 's') {
+      m |= EJDB_IDX_STR;
+    } else if (mode[0] == 'i') {
+      m |= EJDB_IDX_I64;
+    } else if (mode[0] == 'f') {
+      m |= EJDB_IDX_F64;
+    } else {
+      return luaL_error("Invalid modechar %d", mode[0]);
+    }
+    mode++;
+  }
+  EJDB_LUA_ASSERT(ejdb_ensure_index(*db, collection, path, m));
+  lua_pushboolean(L, true);
+  return 1;
+}
+
+/// Remove a index from a collection
+// @function remove_index
+// @tparam string collection The collection to work on
+// @tparam string field JSON Pointer to the field
+// @tparam string mode List of mode chars: `i`=i64, `s`=str, `f`=double, `u`=unique
+// @return[1] true
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_remove_index(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  const char* collection = luaL_checkstring(L, 2);
+  const char* path = luaL_checkstring(L, 3);
+  const char* mode = luaL_checkstring(L, 3);
+  ejdb_idx_mode_t m = 0;
+  while (mode[0]) {
+    if (mode[0] == 'u') {
+      m |= EJDB_IDX_UNIQUE;
+    } else if (mode[0] == 's') {
+      m |= EJDB_IDX_STR;
+    } else if (mode[0] == 'i') {
+      m |= EJDB_IDX_I64;
+    } else if (mode[0] == 'f') {
+      m |= EJDB_IDX_F64;
+    } else {
+      return luaL_error("Invalid modechar %d", mode[0]);
+    }
+    mode++;
+  }
+  EJDB_LUA_ASSERT(ejdb_remove_index(*db, collection, path, m));
+  lua_pushboolean(L, true);
+  return 1;
+}
+
+/// Retrieve database structure
+// @function get_meta
+// @treturn[1] table Structure of the database
+// @return[2] nil
+// @treturn[2] string Error Message
+int ejdb_lua_ejdb_get_meta(lua_State* L) {
+  EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
+  JBL jbl;
+  EJDB_LUA_ASSERT(ejdb_get_meta(*db, &jbl));
+  ejdb_lua_push_jbl(L, &jbl);
+  jbl_destroy(&jbl);
+  return 1;
 }
 
 /// JQL Query
@@ -364,7 +521,6 @@ int ejdb_lua_query_set_regex(lua_State* L) {
   memcpy(data, value, strlen(value) + 1);
   EJDB_LUA_ERROR(jql_set_regexp2(*q, placeholder, index, data, jql_set_str2_stdfree, NULL));
   return 0;
-  return 0;
 }
 
 int luaopen_ejdb(lua_State* L) {
@@ -377,6 +533,22 @@ int luaopen_ejdb(lua_State* L) {
   lua_setfield(L, -2, "exec");
   lua_pushcfunction(L, ejdb_lua_ejdb_close);
   lua_setfield(L, -2, "close");
+  lua_pushcfunction(L, ejdb_lua_ejdb_get);
+  lua_setfield(L, -2, "get");
+  lua_pushcfunction(L, ejdb_lua_ejdb_del);
+  lua_setfield(L, -2, "del");
+  lua_pushcfunction(L, ejdb_lua_ejdb_remove_collection);
+  lua_setfield(L, -2, "remove_collection");
+  lua_pushcfunction(L, ejdb_lua_ejdb_rename_collection);
+  lua_setfield(L, -2, "rename_collection");
+  lua_pushcfunction(L, ejdb_lua_ejdb_ensure_collection);
+  lua_setfield(L, -2, "ensure_collection");
+  lua_pushcfunction(L, ejdb_lua_ejdb_ensure_index);
+  lua_setfield(L, -2, "ensure_index");
+  lua_pushcfunction(L, ejdb_lua_ejdb_remove_index);
+  lua_setfield(L, -2, "remove_index");
+  lua_pushcfunction(L, ejdb_lua_ejdb_get_meta);
+  lua_setfield(L, -2, "get_meta");
   lua_setfield(L, -1, "__index");
 
   luaL_newmetatable(L, EJDB_QUERY_META);
