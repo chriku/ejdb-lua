@@ -396,7 +396,7 @@ int ejdb_lua_ejdb_ensure_index(lua_State* L) {
   EJDB* db = luaL_checkudata(L, 1, EJDB_DATABASE_META);
   const char* collection = luaL_checkstring(L, 2);
   const char* path = luaL_checkstring(L, 3);
-  const char* mode = luaL_checkstring(L, 3);
+  const char* mode = luaL_checkstring(L, 4);
   ejdb_idx_mode_t m = 0;
   while (mode[0]) {
     if (mode[0] == 'u') {
@@ -408,7 +408,7 @@ int ejdb_lua_ejdb_ensure_index(lua_State* L) {
     } else if (mode[0] == 'f') {
       m |= EJDB_IDX_F64;
     } else {
-      return luaL_error("Invalid modechar %d", mode[0]);
+      return luaL_error(L, "Invalid modechar %d", mode[0]);
     }
     mode++;
   }

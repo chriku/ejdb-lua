@@ -7,6 +7,7 @@ end
 package.cpath=package.cpath..";build/linux/x86_64/release/libejdb.so"
 local ejdb=require"ejdb"
 local db = assert(ejdb.open("test.db","w"))
+db:ensure_index("parrots","/name","us")
 assert(db:put("parrots",{name="Bianca",age=4}))
 assert(db:put(8,"parrots","{\"name\":\"Darko\", \"age\":8}"))
 do
