@@ -17,19 +17,19 @@
 
 #define EJDB_LUA_ASSERT(expr)                                                                                          \
   {                                                                                                                    \
-    iwrc rc = (expr);                                                                                                  \
-    if (rc) {                                                                                                          \
+    iwrc erc = (expr);                                                                                                 \
+    if (erc) {                                                                                                         \
       lua_pushnil(L);                                                                                                  \
-      lua_pushstring(L, iwlog_ecode_explained(rc));                                                                    \
+      lua_pushstring(L, iwlog_ecode_explained(erc));                                                                   \
       return 2;                                                                                                        \
     }                                                                                                                  \
   }
 
 #define EJDB_LUA_ERROR(expr)                                                                                           \
   {                                                                                                                    \
-    iwrc rc = (expr);                                                                                                  \
-    if (rc) {                                                                                                          \
-      return luaL_error(L, "ejdb: %s", iwlog_ecode_explained(rc));                                                     \
+    iwrc erc = (expr);                                                                                                 \
+    if (erc) {                                                                                                         \
+      return luaL_error(L, "ejdb: %s", iwlog_ecode_explained(erc));                                                    \
     }                                                                                                                  \
   }
 
